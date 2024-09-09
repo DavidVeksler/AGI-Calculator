@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/AGI-Calculator/static/css/main.f9c248de.css",
-    "main.js": "/AGI-Calculator/static/js/main.57bbe2bc.js",
+    "main.js": "/AGI-Calculator/static/js/main.92d7a836.js",
     "static/js/453.5c5e376a.chunk.js": "/AGI-Calculator/static/js/453.5c5e376a.chunk.js",
     "index.html": "/AGI-Calculator/index.html",
     "main.f9c248de.css.map": "/AGI-Calculator/static/css/main.f9c248de.css.map",
-    "main.57bbe2bc.js.map": "/AGI-Calculator/static/js/main.57bbe2bc.js.map",
+    "main.92d7a836.js.map": "/AGI-Calculator/static/js/main.92d7a836.js.map",
     "453.5c5e376a.chunk.js.map": "/AGI-Calculator/static/js/453.5c5e376a.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.f9c248de.css",
-    "static/js/main.57bbe2bc.js"
+    "static/js/main.92d7a836.js"
   ]
 }
