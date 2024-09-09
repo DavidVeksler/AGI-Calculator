@@ -1,0 +1,11 @@
+.slider-thumb {
+    @apply w-5 h-5 bg-white border-2 border-gray-300 rounded-full shadow cursor-pointer;
+  }
+  
+  .slider-track {
+    @apply h-2 bg-gray-200 rounded-full;
+  }
+  
+  .slider-track-1 {
+    @apply bg-blue-500;
+  }
