@@ -6,8 +6,21 @@ import { initialParams } from './InitialParamsComponent';
 import DocumentationComponent from './DocumentationComponent';
 import ImprovedResults from './ImprovedResults';
 import Header from './Header';
+import { AGICalculations } from './AGICalculations';
 
-const formatNumber = (num) => {
+interface Results {
+  T_AGI: number;
+  R_compute: number;
+  Date_AGI?: Date;
+  Date_PhysicalLimits?: Date;
+  Date_ASI?: Date;
+  S_AGI: number;
+  Cost_AGI: number;
+  I_AGI: number;
+  P_limits: number;
+}
+
+const formatNumber = (num: number | undefined | null): string => {
   if (num === undefined || num === null) return 'N/A';
   if (isNaN(num)) return 'Error';
   if (num === 0) return '0';
@@ -19,44 +32,32 @@ const formatNumber = (num) => {
   return numeral(num).format('0.[00]e+0');
 };
 
-const AGICalculator = () => {
+const AGICalculator: React.FC = () => {
   const [params, setParams] = useState(Object.fromEntries(Object.entries(initialParams).map(([k, v]) => [k, v.value])));
-  const [results, setResults] = useState({});
+  const [results, setResults] = useState<Results>({
+    T_AGI: 0,
+    R_compute: 0,
+    S_AGI: 0,
+    Cost_AGI: 0,
+    I_AGI: 0,
+    P_limits: 0
+  });
+  const [enableNonLinearEfficiency, setEnableNonLinearEfficiency] = useState(false);
+  const [enableFundingAcceleration, setEnableFundingAcceleration] = useState(false);
+  const [enableSynergisticEffects, setEnableSynergisticEffects] = useState(false);
 
-  const calculateResults = () => {
-    const R_compute = (1 + params.R_raw) * (1 + params.R_efficiency) - 1;
+  useEffect(() => {
+    console.log('Params changed:', params);
+    console.log('enableNonLinearEfficiency:', enableNonLinearEfficiency);
+    console.log('enableFundingAcceleration:', enableFundingAcceleration);
+    console.log('enableSynergisticEffects:', enableSynergisticEffects);
+  
+    const calculator = new AGICalculations(params, enableNonLinearEfficiency, enableFundingAcceleration, enableSynergisticEffects);
+    setResults(calculator.calculateResults());
+  }, [params, enableNonLinearEfficiency, enableFundingAcceleration, enableSynergisticEffects]);
+  
 
-    let T_AGI, S_AGI, Cost_AGI, I_AGI, P_limits, Date_AGI, Date_PhysicalLimits, Date_ASI;
-
-    if (R_compute <= 0 || params.C_AGI <= params.C_current) {
-      T_AGI = Infinity;
-    } else {
-      T_AGI = Math.log(params.C_AGI / params.C_current) / Math.log(1 + R_compute);
-    }
-
-    if (isFinite(T_AGI)) {
-      S_AGI = params.S_0 * Math.pow(1 + params.R_size, T_AGI);
-      Cost_AGI = params.Cost_0 * Math.pow(1 - params.R_cost, T_AGI);
-      I_AGI = params.C_AGI * Cost_AGI * Math.pow(1 + params.R_funding, T_AGI);
-      P_limits = 1 - Math.exp(-params.lambda * T_AGI);
-      Date_AGI = new Date(Date.now() + T_AGI * 365 * 24 * 60 * 60 * 1000);
-
-      const T_PhysicalLimits = -Math.log(0.01) / params.lambda;
-      Date_PhysicalLimits = new Date(Date.now() + T_PhysicalLimits * 365 * 24 * 60 * 60 * 1000);
-
-      const T_ASI = T_AGI + Math.log(1e6) / Math.log(1 + R_compute);
-      Date_ASI = new Date(Date.now() + T_ASI * 365 * 24 * 60 * 60 * 1000);
-    } else {
-      S_AGI = Cost_AGI = I_AGI = P_limits = Infinity;
-      Date_AGI = Date_PhysicalLimits = Date_ASI = new Date(8640000000000000);
-    }
-
-    setResults({ R_compute, T_AGI, S_AGI, Cost_AGI, I_AGI, P_limits, Date_AGI, Date_PhysicalLimits, Date_ASI });
-  };
-
-  useEffect(calculateResults, [params]);
-
-  const handleParamChange = (name, value) => {
+  const handleParamChange = (name: string, value: number) => {
     setParams(prev => ({ ...prev, [name]: value }));
   };
 
@@ -94,7 +95,8 @@ const AGICalculator = () => {
 
   const generateGraphData = () => {
     const data = [];
-    const years = Math.min(Math.ceil(results.T_AGI) || 0, 100);
+    const years = Math.min(Math.ceil(results.T_AGI ?? 0), 100);
+
     const currentYear = new Date().getFullYear();
     for (let i = 0; i <= years; i++) {
       data.push({
@@ -136,6 +138,52 @@ const AGICalculator = () => {
           <Button variant="secondary" onClick={resetParams}>Reset to Default</Button>
         </div>
       </div>
+
+      <div className="row mb-3">
+        <div className="col-md-4">
+          <div className="form-check">
+            <input
+              className="form-check-input"
+              type="checkbox"
+              checked={enableNonLinearEfficiency}
+              onChange={(e) => setEnableNonLinearEfficiency(e.target.checked)}
+              id="nonLinearEfficiency"
+            />
+            <label className="form-check-label" htmlFor="nonLinearEfficiency">
+              Enable Non-linear Efficiency Gains
+            </label>
+          </div>
+        </div>
+        <div className="col-md-4">
+          <div className="form-check">
+            <input
+              className="form-check-input"
+              type="checkbox"
+              checked={enableFundingAcceleration}
+              onChange={(e) => setEnableFundingAcceleration(e.target.checked)}
+              id="fundingAcceleration"
+            />
+            <label className="form-check-label" htmlFor="fundingAcceleration">
+              Enable Funding Acceleration
+            </label>
+          </div>
+        </div>
+        <div className="col-md-4">
+          <div className="form-check">
+            <input
+              className="form-check-input"
+              type="checkbox"
+              checked={enableSynergisticEffects}
+              onChange={(e) => setEnableSynergisticEffects(e.target.checked)}
+              id="synergisticEffects"
+            />
+            <label className="form-check-label" htmlFor="synergisticEffects">
+              Enable Synergistic Effects
+            </label>
+          </div>
+        </div>
+      </div>
+
       <div className="row">
         <div className="col-md-6">
           <h2 className="h5 mb-2">Input Parameters</h2>
@@ -144,7 +192,7 @@ const AGICalculator = () => {
               <div key={groupKey} className="mb-3">
                 <h3 className="h6 mb-2">{group.title}</h3>
                 {group.params.map(key => {
-                  const { name, value: defaultValue, description } = initialParams[key];
+                  const { name, value: defaultValue, description } = initialParams[key as keyof typeof initialParams];
                   return (
                     <div key={key} className="mb-1">
                       <OverlayTrigger
@@ -181,9 +229,7 @@ const AGICalculator = () => {
           </div>
         </div>
         <div className="col-md-6">
-
           <ImprovedResults results={results} formatNumber={formatNumber} />
-
         </div>
       </div>
       <div className="mt-3">
@@ -193,7 +239,7 @@ const AGICalculator = () => {
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="year" />
             <YAxis scale="log" domain={['auto', 'auto']} tickFormatter={formatNumber} />
-            <Tooltip formatter={(value) => formatNumber(value)} />
+            <Tooltip formatter={(value) => formatNumber(Number(value))} />
             <Legend />
             <Line type="monotone" dataKey="compute" stroke="#0d6efd" name="Compute (FLOP/s)" />
             <ReferenceLine y={3e16} stroke="green" label={{ value: 'Human Brain (30 PFLOP/s)', position: 'left' }} />
