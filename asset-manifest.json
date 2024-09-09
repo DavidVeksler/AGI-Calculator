@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/AGI-Calculator/static/css/main.f25e8da9.css",
+    "main.js": "/AGI-Calculator/static/js/main.39a486c8.js",
+    "static/js/453.5c5e376a.chunk.js": "/AGI-Calculator/static/js/453.5c5e376a.chunk.js",
+    "index.html": "/AGI-Calculator/index.html",
+    "main.f25e8da9.css.map": "/AGI-Calculator/static/css/main.f25e8da9.css.map",
+    "main.39a486c8.js.map": "/AGI-Calculator/static/js/main.39a486c8.js.map",
+    "453.5c5e376a.chunk.js.map": "/AGI-Calculator/static/js/453.5c5e376a.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.f25e8da9.css",
+    "static/js/main.39a486c8.js"
+  ]
+}
