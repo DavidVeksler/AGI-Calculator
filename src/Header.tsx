@@ -15,9 +15,9 @@ const Header: React.FC = () => {
           <div className="row justify-content-center">
             <div className="col-md-10">
               <div className="card bg-white text-dark p-4 shadow">
-                <h2 className="h4 mb-3 text-primary">Explore the Future of AI</h2>
+                <h2 className="h4 mb-3 text-primary">When will AGI arrive?</h2>
                 <p className="lead">
-                Using a simplified model based on current AI trends, compute growth, and various economic factors, this calculator estimates when we might achieve these significant milestones in AI development. Are you ready to peek into the future of artificial intelligence?
+                Using a simplified model based on current AI trends, compute growth, and various economic factors, this calculator estimates when we might achieve these significant milestones in AI development.
                 </p>
                 
                 <div className="text-center mt-4">
