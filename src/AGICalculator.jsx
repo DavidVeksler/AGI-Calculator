@@ -3,12 +3,13 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import { OverlayTrigger, Tooltip as BSTooltip, Button } from 'react-bootstrap';
 import numeral from 'numeral';
 import { initialParams } from './InitialParamsComponent';
+import DocumentationComponent from './DocumentationComponent';
 
 const formatNumber = (num) => {
   if (num === undefined || num === null) return 'N/A';
   if (isNaN(num)) return 'Error';
   if (num === 0) return '0';
-  
+
   const absNum = Math.abs(num);
   if (absNum < 1e-9) return numeral(num).format('0.[000000000]e+0');
   if (absNum < 1) return numeral(num).format('0.[000000]');
@@ -22,7 +23,7 @@ const AGICalculator = () => {
 
   const calculateResults = () => {
     const R_compute = (1 + params.R_raw) * (1 + params.R_efficiency) - 1;
-    
+
     let T_AGI, S_AGI, Cost_AGI, I_AGI, P_limits, Date_AGI, Date_PhysicalLimits, Date_ASI;
 
     if (R_compute <= 0 || params.C_AGI <= params.C_current) {
@@ -37,7 +38,7 @@ const AGICalculator = () => {
       I_AGI = params.C_AGI * Cost_AGI * Math.pow(1 + params.R_funding, T_AGI);
       P_limits = 1 - Math.exp(-params.lambda * T_AGI);
       Date_AGI = new Date(Date.now() + T_AGI * 365 * 24 * 60 * 60 * 1000);
-      
+
       const T_PhysicalLimits = -Math.log(0.01) / params.lambda;
       Date_PhysicalLimits = new Date(Date.now() + T_PhysicalLimits * 365 * 24 * 60 * 60 * 1000);
 
@@ -102,9 +103,38 @@ const AGICalculator = () => {
     return data;
   };
 
+  const parameterGroups = {
+    computeCapabilities: {
+      title: "Compute Capabilities",
+      params: ["C_AGI", "C_current", "R_raw", "R_efficiency"]
+    },
+    modelCharacteristics: {
+      title: "Model Characteristics",
+      params: ["S_0", "R_size", "R_train_infer"]
+    },
+    economicFactors: {
+      title: "Economic Factors",
+      params: ["Cost_0", "R_cost", "R_funding"]
+    },
+    limitingFactors: {
+      title: "Limiting Factors",
+      params: ["lambda"]
+    }
+  };
+
   return (
     <div className="container-fluid mt-2">
       <h1 className="h3 mb-3">AI Progress Calculator</h1>
+
+      <div className="row mb-4">
+        <div className="col-12">
+          <h2 className="h4 mb-3">Introduction</h2>
+          <p>
+            The AI Progress Calculator is to explore potential timelines for the development of Artificial General Intelligence (AGI) and Artificial Superintelligence (ASI). This calculator uses a simplified model based on current AI trends, compute growth, and various economic factors to estimate when we might achieve these significant milestones in AI development.
+          </p>          
+        </div>
+      </div>
+
       <div className="row mb-3">
         <div className="col-md-12">
           <h2 className="h5 mb-2">Scenarios</h2>
@@ -116,35 +146,43 @@ const AGICalculator = () => {
       <div className="row">
         <div className="col-md-6">
           <h2 className="h5 mb-2">Input Parameters</h2>
-          <div className="border p-2 rounded" style={{maxHeight: '400px', overflowY: 'auto'}}>
-            {Object.entries(initialParams).map(([key, { name, value: defaultValue, description }]) => (
-              <div key={key} className="mb-1">
-                <OverlayTrigger
-                  placement="right"
-                  overlay={<BSTooltip id={`tooltip-${key}`}>{description}</BSTooltip>}
-                >
-                  <label className="form-label mb-0 small">
-                    {name} <span className="text-muted">(Default: {formatNumber(defaultValue)})</span>
-                  </label>
-                </OverlayTrigger>
-                <div className="input-group input-group-sm">
-                  <input
-                    type="range"
-                    className="form-range"
-                    min={0}
-                    max={key === 'C_AGI' || key === 'C_current' ? 1e40 : key === 'Cost_0' ? 1 : 10}
-                    step={key === 'Cost_0' ? 1e-12 : 0.01}
-                    value={params[key]}
-                    onChange={(e) => handleParamChange(key, parseFloat(e.target.value))}
-                  />
-                  <input
-                    type="number"
-                    className="form-control form-control-sm"
-                    style={{width: '100px'}}
-                    value={params[key]}
-                    onChange={(e) => handleParamChange(key, parseFloat(e.target.value))}
-                  />
-                </div>
+          <div className="border p-2 rounded" style={{ maxHeight: '400px', overflowY: 'auto' }}>
+            {Object.entries(parameterGroups).map(([groupKey, group]) => (
+              <div key={groupKey} className="mb-3">
+                <h3 className="h6 mb-2">{group.title}</h3>
+                {group.params.map(key => {
+                  const { name, value: defaultValue, description } = initialParams[key];
+                  return (
+                    <div key={key} className="mb-1">
+                      <OverlayTrigger
+                        placement="right"
+                        overlay={<BSTooltip id={`tooltip-${key}`}>{description}</BSTooltip>}
+                      >
+                        <label className="form-label mb-0 small">
+                          {name} <span className="text-muted">(Default: {formatNumber(defaultValue)})</span>
+                        </label>
+                      </OverlayTrigger>
+                      <div className="input-group input-group-sm">
+                        <input
+                          type="range"
+                          className="form-range"
+                          min={0}
+                          max={key === 'C_AGI' || key === 'C_current' ? 1e40 : key === 'Cost_0' ? 1 : 10}
+                          step={key === 'Cost_0' ? 1e-12 : 0.01}
+                          value={params[key]}
+                          onChange={(e) => handleParamChange(key, parseFloat(e.target.value))}
+                        />
+                        <input
+                          type="number"
+                          className="form-control form-control-sm"
+                          style={{ width: '100px' }}
+                          value={params[key]}
+                          onChange={(e) => handleParamChange(key, parseFloat(e.target.value))}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             ))}
           </div>
@@ -226,6 +264,7 @@ const AGICalculator = () => {
           </LineChart>
         </ResponsiveContainer>
       </div>
+      <DocumentationComponent />
     </div>
   );
 };
