@@ -4,6 +4,8 @@ import { OverlayTrigger, Tooltip as BSTooltip, Button } from 'react-bootstrap';
 import numeral from 'numeral';
 import { initialParams } from './InitialParamsComponent';
 import DocumentationComponent from './DocumentationComponent';
+import ImprovedResults from './ImprovedResults';
+import Header from './Header';
 
 const formatNumber = (num) => {
   if (num === undefined || num === null) return 'N/A';
@@ -124,16 +126,7 @@ const AGICalculator = () => {
 
   return (
     <div className="container-fluid mt-2">
-      <h1 className="h3 mb-3">AI Progress Calculator</h1>
-
-      <div className="row mb-4">
-        <div className="col-12">
-          <h2 className="h4 mb-3">Introduction</h2>
-          <p>
-            The AI Progress Calculator is to explore potential timelines for the development of Artificial General Intelligence (AGI) and Artificial Superintelligence (ASI). This calculator uses a simplified model based on current AI trends, compute growth, and various economic factors to estimate when we might achieve these significant milestones in AI development.
-          </p>          
-        </div>
-      </div>
+      <Header />
 
       <div className="row mb-3">
         <div className="col-md-12">
@@ -188,45 +181,9 @@ const AGICalculator = () => {
           </div>
         </div>
         <div className="col-md-6">
-          <h2 className="h5 mb-2">Results</h2>
-          <ul className="list-group">
-            <li className="list-group-item py-1 d-flex justify-content-between align-items-center">
-              <span className="small">Effective Compute Growth Rate</span>
-              <span className="badge bg-primary rounded-pill">{results.R_compute?.toFixed(2) || 'N/A'}</span>
-            </li>
-            <li className="list-group-item py-1 d-flex justify-content-between align-items-center">
-              <span className="small">Time to AGI Compute Threshold</span>
-              <span className="badge bg-primary rounded-pill">{isFinite(results.T_AGI) ? `${results.T_AGI.toFixed(2)} years` : 'Never'}</span>
-            </li>
-            <li className="list-group-item py-1 d-flex justify-content-between align-items-center">
-              <span className="small">Model Size at AGI</span>
-              <span className="badge bg-primary rounded-pill">{formatNumber(results.S_AGI)} parameters</span>
-            </li>
-            <li className="list-group-item py-1 d-flex justify-content-between align-items-center">
-              <span className="small">Cost per FLOP/s at AGI</span>
-              <span className="badge bg-primary rounded-pill">${formatNumber(results.Cost_AGI)}</span>
-            </li>
-            <li className="list-group-item py-1 d-flex justify-content-between align-items-center">
-              <span className="small">Total Investment to AGI</span>
-              <span className="badge bg-primary rounded-pill">${formatNumber(results.I_AGI)}</span>
-            </li>
-            <li className="list-group-item py-1 d-flex justify-content-between align-items-center">
-              <span className="small">Probability of Hitting Physical Limits</span>
-              <span className="badge bg-primary rounded-pill">{isFinite(results.P_limits) ? `${(results.P_limits * 100).toFixed(2)}%` : 'N/A'}</span>
-            </li>
-            <li className="list-group-item py-1 d-flex justify-content-between align-items-center">
-              <span className="small">Estimated AGI Date</span>
-              <span className="badge bg-primary rounded-pill">{results.Date_AGI?.toLocaleDateString() === '1/1/275760' ? 'Never' : results.Date_AGI?.toLocaleDateString() || 'N/A'}</span>
-            </li>
-            <li className="list-group-item py-1 d-flex justify-content-between align-items-center">
-              <span className="small">Estimated ASI Date</span>
-              <span className="badge bg-primary rounded-pill">{results.Date_ASI?.toLocaleDateString() === '1/1/275760' ? 'Never' : results.Date_ASI?.toLocaleDateString() || 'N/A'}</span>
-            </li>
-            <li className="list-group-item py-1 d-flex justify-content-between align-items-center">
-              <span className="small">Estimated Date of Physical Limits</span>
-              <span className="badge bg-primary rounded-pill">{results.Date_PhysicalLimits?.toLocaleDateString() === '1/1/275760' ? 'Never' : results.Date_PhysicalLimits?.toLocaleDateString() || 'N/A'}</span>
-            </li>
-          </ul>
+
+          <ImprovedResults results={results} formatNumber={formatNumber} />
+
         </div>
       </div>
       <div className="mt-3">
