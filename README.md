@@ -1,5 +1,7 @@
 # Getting Started with Create React App
 
+Run the calculator at https://davidveksler.github.io/AGI-Calculator/
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
